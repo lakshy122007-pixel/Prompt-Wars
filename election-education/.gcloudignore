@@ -1,0 +1,23 @@
+# This file specifies files that are *not* uploaded to Google Cloud
+.gcloudignore
+.git
+.gitignore
+node_modules/
+.next/cache/
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.log
+.vscode/
+.idea/
+coverage/
+__tests__/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+playwright-report/
+test-results/
+.husky/
