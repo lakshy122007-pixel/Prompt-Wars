@@ -18,23 +18,27 @@ Key Approach:
 Break down complex election concepts into simple UI components
 Use modular code structure (API, maps, election logic, etc.)
 Provide interactive and user-friendly navigation
-How the Solution Works
+How the Solution Works-
+
 1. Frontend
 Built using modern web technologies (likely Next.js / React based on structure)
 UI components display:
 Polling station details
 Election information
 Educational content
+
 2. Backend Logic (via APIs)
 Files like api.ts, election.ts, maps.ts handle:
 Fetching and processing election data
 Managing polling station information
 Possibly integrating map/location features
+
 3. Polling Station Feature
 Users can:
 View polling station details
 Understand where and how to vote
 Data is fetched and displayed dynamically
+
 4. Deployment
 The app is containerized using a Dockerfile
 Deployed using Railway, making it publicly accessible
@@ -51,15 +55,14 @@ Location accuracy may depend on available data sources
 ```
 Features:
 ```
-  Polling station information
-  Election education content
-  User-friendly interface
-  Deployed and accessible online
+Polling station information
+Election education content
+User-friendly interface
+Deployed and accessible online
 ```
 Live Demo:
-```
- https://prompt-wars-production-41c1.up.railway.app
-```
+https://prompt-wars-production-41c1.up.railway.app
+
 Tech Stack:
 ```
 Frontend: React / Next.js
