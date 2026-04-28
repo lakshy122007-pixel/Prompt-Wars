@@ -1,39 +1,101 @@
+/**
+ * @module Root Layout
+ * @description Application shell with auth state management, theme persistence,
+ * skip-to-content link, and semantic HTML landmarks.
+ */
+
 'use client';
 
 import './globals.css';
 import { useEffect, useState, useCallback } from 'react';
+
 import { onAuthChange } from '@/lib/firebase/auth';
-import { useAuthStore } from '@/stores/authStore';
 import { getUserProfile } from '@/lib/firebase/firestore';
+import { STORAGE_KEYS } from '@/lib/constants/app';
+import { logger } from '@/lib/utils/logger';
+import { useAuthStore } from '@/stores/authStore';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/Toaster';
+import type { UserProfile } from '@/types/auth';
+import type { Timestamp } from 'firebase/firestore';
 
+/**
+ * Creates a minimal profile for first-time authenticated users
+ * who don't yet have a Firestore document.
+ *
+ * @param uid - Firebase UID
+ * @param email - User email (nullable for anonymous users)
+ * @param displayName - User display name (nullable)
+ * @param photoURL - User avatar URL (nullable)
+ * @param isAnonymous - Whether the user signed in anonymously
+ * @returns Partial UserProfile for local state
+ */
+function createMinimalProfile(
+  uid: string,
+  email: string | null,
+  displayName: string | null,
+  photoURL: string | null,
+  isAnonymous: boolean,
+): UserProfile {
+  return {
+    uid,
+    email,
+    displayName,
+    photoURL,
+    preferredLanguage: 'en',
+    accessibilityPreferences: {
+      fontSize: 'normal',
+      highContrast: false,
+      reducedMotion: false,
+      screenReaderMode: false,
+      textToSpeech: false,
+      keyboardOnly: false,
+      dyslexiaFont: false,
+    },
+    quizProgress: [],
+    learnProgress: [],
+    createdAt: null as unknown as Timestamp,
+    lastLoginAt: null as unknown as Timestamp,
+    isAnonymous,
+  };
+}
+
+/**
+ * Root layout component providing global state, theming, and structure.
+ *
+ * @param props.children - Page content rendered inside the main landmark
+ * @returns The full application shell
+ */
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}): React.JSX.Element {
   const { setUser, setLoading } = useAuthStore();
   const [darkMode, setDarkMode] = useState(false);
 
-  const toggleDarkMode = useCallback(() => {
+  /** Toggles between light and dark mode */
+  const toggleDarkMode = useCallback((): void => {
     setDarkMode((prev) => !prev);
   }, []);
 
+  /** Hydrate theme from localStorage or system preference */
   useEffect(() => {
-    // Check saved theme preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME);
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
       setDarkMode(true);
     }
   }, []);
 
+  /** Persist theme class and localStorage value */
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
-    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+    localStorage.setItem(STORAGE_KEYS.THEME, darkMode ? 'dark' : 'light');
   }, [darkMode]);
 
+  /** Subscribe to Firebase auth state changes and hydrate profile */
   useEffect(() => {
     setLoading(true);
     const unsubscribe = onAuthChange(async (firebaseUser) => {
@@ -43,28 +105,15 @@ export default function RootLayout({
           if (profile) {
             setUser(profile);
           } else {
-            // Create minimal profile for first-time users
-            setUser({
-              uid: firebaseUser.uid,
-              email: firebaseUser.email,
-              displayName: firebaseUser.displayName,
-              photoURL: firebaseUser.photoURL,
-              preferredLanguage: 'en',
-              accessibilityPreferences: {
-                fontSize: 'normal',
-                highContrast: false,
-                reducedMotion: false,
-                screenReaderMode: false,
-                textToSpeech: false,
-                keyboardOnly: false,
-                dyslexiaFont: false,
-              },
-              quizProgress: [],
-              learnProgress: [],
-              createdAt: null as any,
-              lastLoginAt: null as any,
-              isAnonymous: firebaseUser.isAnonymous,
-            });
+            setUser(
+              createMinimalProfile(
+                firebaseUser.uid,
+                firebaseUser.email,
+                firebaseUser.displayName,
+                firebaseUser.photoURL,
+                firebaseUser.isAnonymous,
+              ),
+            );
           }
         } catch {
           setUser(null);

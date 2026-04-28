@@ -7,6 +7,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { logger } from '@/lib/utils/logger';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils/cn';
 import { Button } from '@/components/ui/Button';
@@ -55,8 +56,8 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, toggleDarkMode }) => {
     try {
       await signInWithGoogle();
       setAuthMenuOpen(false);
-    } catch (err) {
-      console.error('Sign in failed:', err);
+    } catch (err: unknown) {
+      logger.error('Sign in failed', { error: String(err) });
     }
   };
 
@@ -64,8 +65,8 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, toggleDarkMode }) => {
     try {
       await signInAsGuest();
       setAuthMenuOpen(false);
-    } catch (err) {
-      console.error('Guest sign in failed:', err);
+    } catch (err: unknown) {
+      logger.error('Guest sign in failed', { error: String(err) });
     }
   };
 
@@ -73,8 +74,8 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, toggleDarkMode }) => {
     try {
       await signOut();
       setAuthMenuOpen(false);
-    } catch (err) {
-      console.error('Sign out failed:', err);
+    } catch (err: unknown) {
+      logger.error('Sign out failed', { error: String(err) });
     }
   };
 

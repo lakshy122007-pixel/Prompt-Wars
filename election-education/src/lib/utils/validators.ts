@@ -5,6 +5,9 @@
 
 import { z } from 'zod';
 
+import { VALIDATION } from '@/lib/constants/app';
+import type { ValidationResult, EligibilityResult } from '@/types/common';
+
 /** Voter eligibility form validation schema */
 export const voterEligibilitySchema = z.object({
   fullName: z
@@ -112,5 +115,56 @@ export const isEligibleAge = (dateOfBirth: string): boolean => {
     age--;
   }
 
-  return age >= 18;
+  return age >= VALIDATION.MIN_VOTING_AGE;
+};
+
+/**
+ * Check voter eligibility based on age and citizenship
+ * @param params - Age, citizenship, and enrollment status
+ * @returns Eligibility result with reason
+ */
+export const validateVoterEligibility = (params: {
+  age: number;
+  isCitizen: boolean;
+  isEnrolled: boolean;
+}): EligibilityResult => {
+  if (!params.isCitizen) {
+    return { isEligible: false, reason: 'Must be an Indian citizen (Article 326)' };
+  }
+  if (params.age < VALIDATION.MIN_VOTING_AGE) {
+    return {
+      isEligible: false,
+      reason: `Must be at least ${VALIDATION.MIN_VOTING_AGE} years old`,
+    };
+  }
+  return { isEligible: true, reason: 'Meets all eligibility criteria' };
+};
+
+/**
+ * Validates a chat message string
+ * @param message - Raw message text
+ * @returns Validation result
+ */
+export const validateMessage = (message: string): ValidationResult => {
+  const trimmed = message.trim();
+  if (trimmed.length === 0) {
+    return { success: false, message: 'Message cannot be empty' };
+  }
+  if (trimmed.length > VALIDATION.MAX_MESSAGE_LENGTH) {
+    return { success: false, message: `Message must be under ${VALIDATION.MAX_MESSAGE_LENGTH} characters` };
+  }
+  return { success: true };
+};
+
+/**
+ * Validates an Indian 6-digit pincode
+ * @param pincode - Pincode string to validate
+ * @returns Validation result
+ */
+export const validatePincode = (pincode: string): ValidationResult => {
+  const pincodeRegex = /^\d{6}$/;
+  if (!pincodeRegex.test(pincode)) {
+    return { success: false, message: 'Pincode must be exactly 6 digits' };
+  }
+  return { success: true };
 };

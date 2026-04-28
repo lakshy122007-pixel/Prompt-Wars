@@ -24,6 +24,9 @@ export const sanitizeString = (input: string): string => {
  * @returns Sanitized object
  */
 export const sanitizeInput = <T extends Record<string, unknown>>(data: T): T => {
+  if (data === null || data === undefined || typeof data !== 'object') {
+    return {} as T;
+  }
   const sanitized: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(data)) {

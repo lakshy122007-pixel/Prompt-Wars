@@ -9,6 +9,7 @@ import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
+import { logger } from '@/lib/utils/logger';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -39,7 +40,7 @@ export const getFirebaseApp = (): FirebaseApp | null => {
     }
     return getApp();
   } catch (e) {
-    console.warn('Firebase initialization failed:', e);
+    logger.warn('Firebase initialization failed', { error: String(e) });
     return null;
   }
 };

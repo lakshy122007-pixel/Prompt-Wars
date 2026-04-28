@@ -1,44 +1,61 @@
 /**
  * @module Login Page
  * @description Authentication page with Google sign-in and guest access.
+ * Supports loading states and error display.
  */
 
 'use client';
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { signInWithGoogle, signInAsGuest } from '@/lib/firebase/auth';
 import { ROUTES } from '@/lib/constants/routes';
+import { getErrorMessage } from '@/lib/utils/errors';
 import { User, Shield, Sparkles, ArrowRight } from 'lucide-react';
 
-export default function LoginPage() {
+/** Loading indicator for which auth method is in progress */
+type AuthLoadingState = 'google' | 'guest' | null;
+
+/**
+ * Login page component with Google OAuth and anonymous guest sign-in.
+ *
+ * @returns The login page UI
+ */
+export default function LoginPage(): React.JSX.Element {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState<'google' | 'guest' | null>(null);
+  const [isLoading, setIsLoading] = useState<AuthLoadingState>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleGoogleSignIn = async () => {
+  /**
+   * Handles Google sign-in flow
+   */
+  const handleGoogleSignIn = async (): Promise<void> => {
     setIsLoading('google');
     setError(null);
     try {
       await signInWithGoogle();
       router.push(ROUTES.DASHBOARD);
-    } catch (err: any) {
-      setError(err?.message || 'Failed to sign in with Google');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err));
     } finally {
       setIsLoading(null);
     }
   };
 
-  const handleGuestSignIn = async () => {
+  /**
+   * Handles anonymous guest sign-in flow
+   */
+  const handleGuestSignIn = async (): Promise<void> => {
     setIsLoading('guest');
     setError(null);
     try {
       await signInAsGuest();
       router.push(ROUTES.DASHBOARD);
-    } catch (err: any) {
-      setError(err?.message || 'Failed to sign in as guest');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err));
     } finally {
       setIsLoading(null);
     }
@@ -66,7 +83,7 @@ export default function LoginPage() {
             </p>
 
             {error && (
-              <div className="mb-6 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">
+              <div className="mb-6 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm" role="alert">
                 {error}
               </div>
             )}
@@ -81,7 +98,7 @@ export default function LoginPage() {
                 isLoading={isLoading === 'google'}
                 disabled={!!isLoading}
               >
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
                     fill="#4285F4"

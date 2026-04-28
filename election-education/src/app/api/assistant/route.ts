@@ -1,57 +1,105 @@
 /**
  * @module Assistant API Route
- * @description API endpoint for AI assistant powered by Gemini 2.0 Flash.
+ * @description POST endpoint for AI assistant powered by Gemini 2.0 Flash.
+ * Provides election education responses with demo fallback when API key is missing.
+ *
+ * @route POST /api/assistant
+ * @requestBody {{ message: string; history?: ChatHistory[] }} — User question and conversation context
+ * @returns 200 — AI-generated election education response
+ * @returns 400 — Invalid or missing message field
+ * @returns 500 — Internal server error from Gemini API
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { message, history } = body;
+import { HTTP_STATUS } from '@/lib/constants/app';
+import { logger } from '@/lib/utils/logger';
+import { getErrorMessage } from '@/lib/utils/errors';
 
-    if (!message || typeof message !== 'string') {
+/**
+ * Validates the request body for required fields
+ * @param body - Parsed JSON body
+ * @returns Whether the body contains a valid string message
+ */
+function isValidRequestBody(
+  body: unknown,
+): body is { message: string; history?: Array<{ role: string; parts: Array<{ text: string }> }> } {
+  return (
+    typeof body === 'object' &&
+    body !== null &&
+    'message' in body &&
+    typeof (body as Record<string, unknown>).message === 'string' &&
+    ((body as Record<string, unknown>).message as string).trim().length > 0
+  );
+}
+
+/**
+ * Handles POST requests to the AI assistant endpoint.
+ * Falls back to curated demo responses when GEMINI_API_KEY is not configured.
+ *
+ * @param request - Incoming Next.js request
+ * @returns JSON response with assistant content or error
+ */
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  try {
+    const body: unknown = await request.json();
+
+    if (!isValidRequestBody(body)) {
       return NextResponse.json(
         { success: false, error: 'Message is required' },
-        { status: 400 }
+        { status: HTTP_STATUS.BAD_REQUEST },
       );
     }
 
-    // Check if Gemini API key is configured
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      // Return a helpful demo response when API key isn't configured
       return NextResponse.json({
         success: true,
-        data: getDemoResponse(message),
+        data: getDemoResponse(body.message),
       });
     }
 
-    // Use dynamic import to avoid issues when API key isn't set
     const { generateChatResponse } = await import('@/lib/google/gemini');
-    const response = await generateChatResponse(message, history || []);
+    const response = await generateChatResponse(body.message, body.history ?? []);
 
-    return NextResponse.json({
-      success: true,
-      data: response,
-    });
-  } catch (error: any) {
-    console.error('Assistant API error:', error);
+    return NextResponse.json({ success: true, data: response });
+  } catch (error: unknown) {
+    logger.error('Assistant API error', { error: getErrorMessage(error) });
     return NextResponse.json(
       { success: false, error: 'Failed to generate response' },
-      { status: 500 }
+      { status: HTTP_STATUS.INTERNAL_SERVER_ERROR },
     );
   }
 }
 
 /**
- * Provides demo responses when Gemini API key is not configured.
+ * Provides curated demo responses when Gemini API key is not configured.
+ * Covers registration, NOTA, EVM/VVPAT, and generic election topics.
+ *
+ * @param message - User's question text
+ * @returns Markdown-formatted demo response
  */
 function getDemoResponse(message: string): string {
   const lower = message.toLowerCase();
 
   if (lower.includes('register') || lower.includes('registration')) {
-    return `## Voter Registration in India 🗳️
+    return getRegistrationResponse();
+  }
+
+  if (lower.includes('nota')) {
+    return getNotaResponse();
+  }
+
+  if (lower.includes('evm') || lower.includes('vvpat')) {
+    return getEvmResponse();
+  }
+
+  return getGenericResponse();
+}
+
+/** Returns curated voter registration information */
+function getRegistrationResponse(): string {
+  return `## Voter Registration in India 🗳️
 
 To register as a voter in India, you need to:
 
@@ -71,10 +119,11 @@ To register as a voter in India, you need to:
 5. **Receive EPIC**: Once approved, you'll receive your Electoral Photo Identity Card (Voter ID).
 
 📌 *Reference: Section 19 of the Representation of the People Act, 1950*`;
-  }
+}
 
-  if (lower.includes('nota')) {
-    return `## NOTA (None Of The Above) 🏛️
+/** Returns curated NOTA information */
+function getNotaResponse(): string {
+  return `## NOTA (None Of The Above) 🏛️
 
 **NOTA** is an option available on the Electronic Voting Machine (EVM) that allows voters to express their dissatisfaction with all contesting candidates.
 
@@ -90,10 +139,11 @@ To register as a voter in India, you need to:
 - Your vote is still **counted** and reflected in results
 
 📌 *Reference: Supreme Court Judgment in People's Union for Civil Liberties vs Union of India, 2013*`;
-  }
+}
 
-  if (lower.includes('evm') || lower.includes('vvpat')) {
-    return `## EVM & VVPAT System 🖥️
+/** Returns curated EVM/VVPAT information */
+function getEvmResponse(): string {
+  return `## EVM & VVPAT System 🖥️
 
 ### Electronic Voting Machine (EVM)
 - Used in Indian elections since **2004** (full implementation)
@@ -113,8 +163,10 @@ To register as a voter in India, you need to:
 - Any discrepancy triggers a full audit
 
 📌 *Reference: Conduct of Elections Rules, 1961 (as amended)*`;
-  }
+}
 
+/** Returns generic welcome response listing bot capabilities */
+function getGenericResponse(): string {
   return `## Thank you for your question! 📚
 
 I'm **ElectionBot**, your AI assistant for understanding Indian democracy and elections.
