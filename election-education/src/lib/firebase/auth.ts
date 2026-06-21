@@ -23,12 +23,68 @@ const googleProvider = isFirebaseConfigured ? (() => {
   return provider;
 })() : null;
 
+// Mock auth implementation for local development when Firebase is not configured
+interface MockUser {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+  isAnonymous: boolean;
+  getIdToken: (forceRefresh?: boolean) => Promise<string>;
+}
+
+let mockCurrentUser: MockUser | null = null;
+const authListeners = new Set<(user: User | null) => void>();
+
+const base64urlEncode = (str: string): string => {
+  let base64: string;
+  if (typeof Buffer !== 'undefined') {
+    base64 = Buffer.from(str, 'utf-8').toString('base64');
+  } else {
+    const utf8Bytes = encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, p1) => {
+      return String.fromCharCode(parseInt(p1, 16));
+    });
+    base64 = btoa(utf8Bytes);
+  }
+  return base64
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+};
+
+const createMockJwt = (uid: string, email: string | null) => {
+  const header = base64urlEncode(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const payload = base64urlEncode(
+    JSON.stringify({
+      user_id: uid,
+      email: email,
+      exp: Math.floor(Date.now() / 1000) + 3600,
+    })
+  );
+  return `${header}.${payload}.mock_signature`;
+};
+
+const triggerAuthListeners = () => {
+  authListeners.forEach((cb) => cb(mockCurrentUser as unknown as User));
+};
+
 /**
  * Sign in with Google popup
  * @returns The authenticated user
  */
 export const signInWithGoogle = async (): Promise<User> => {
-  if (!auth || !googleProvider) throw new Error('Firebase not configured');
+  if (!auth || !googleProvider) {
+    mockCurrentUser = {
+      uid: 'mock-google-user-123',
+      email: 'demouser@electionedu.org',
+      displayName: 'Democracy Citizen',
+      photoURL: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Democracy',
+      isAnonymous: false,
+      getIdToken: async () => createMockJwt('mock-google-user-123', 'demouser@electionedu.org'),
+    };
+    triggerAuthListeners();
+    return mockCurrentUser as unknown as User;
+  }
   const result = await signInWithPopup(auth, googleProvider);
   return result.user;
 };
@@ -38,7 +94,18 @@ export const signInWithGoogle = async (): Promise<User> => {
  * @returns The anonymous user
  */
 export const signInAsGuest = async (): Promise<User> => {
-  if (!auth) throw new Error('Firebase not configured');
+  if (!auth) {
+    mockCurrentUser = {
+      uid: 'mock-guest-456',
+      email: null,
+      displayName: 'Guest Citizen',
+      photoURL: null,
+      isAnonymous: true,
+      getIdToken: async () => createMockJwt('mock-guest-456', null),
+    };
+    triggerAuthListeners();
+    return mockCurrentUser as unknown as User;
+  }
   const result = await signInAnonymously(auth);
   return result.user;
 };
@@ -48,7 +115,18 @@ export const signInAsGuest = async (): Promise<User> => {
  * @returns The linked user
  */
 export const upgradeAnonymousToGoogle = async (): Promise<User> => {
-  if (!auth || !googleProvider) throw new Error('Firebase not configured');
+  if (!auth || !googleProvider) {
+    mockCurrentUser = {
+      uid: 'mock-google-user-123',
+      email: 'demouser@electionedu.org',
+      displayName: 'Democracy Citizen',
+      photoURL: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Democracy',
+      isAnonymous: false,
+      getIdToken: async () => createMockJwt('mock-google-user-123', 'demouser@electionedu.org'),
+    };
+    triggerAuthListeners();
+    return mockCurrentUser as unknown as User;
+  }
   const currentUser = auth.currentUser;
   if (!currentUser || !currentUser.isAnonymous) {
     throw new Error('No anonymous user to upgrade');
@@ -61,7 +139,11 @@ export const upgradeAnonymousToGoogle = async (): Promise<User> => {
  * Sign out the current user
  */
 export const signOut = async (): Promise<void> => {
-  if (!auth) return;
+  if (!auth) {
+    mockCurrentUser = null;
+    triggerAuthListeners();
+    return;
+  }
   await firebaseSignOut(auth);
 };
 
@@ -72,9 +154,12 @@ export const signOut = async (): Promise<void> => {
  */
 export const onAuthChange = (callback: (user: User | null) => void): Unsubscribe => {
   if (!auth) {
-    // If Firebase isn't configured, immediately call back with null
-    callback(null);
-    return () => {};
+    authListeners.add(callback);
+    // Defer initial emission to match onAuthStateChanged async timing
+    setTimeout(() => callback(mockCurrentUser as unknown as User), 0);
+    return () => {
+      authListeners.delete(callback);
+    };
   }
   return onAuthStateChanged(auth, callback);
 };
@@ -84,7 +169,9 @@ export const onAuthChange = (callback: (user: User | null) => void): Unsubscribe
  * @returns The ID token string, or null if not authenticated
  */
 export const getIdToken = async (): Promise<string | null> => {
-  if (!auth) return null;
+  if (!auth) {
+    return mockCurrentUser ? mockCurrentUser.getIdToken() : null;
+  }
   const currentUser = auth.currentUser;
   if (!currentUser) return null;
   return currentUser.getIdToken(true);

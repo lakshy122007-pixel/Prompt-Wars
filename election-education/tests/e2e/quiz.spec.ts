@@ -22,7 +22,8 @@ test.describe('Quiz Flow', () => {
   test('shows results with score at the end', async ({ page }) => {
     await page.click('[data-testid="start-quiz-voter-eligibility"]');
     const questionCount = await page.locator('[data-testid="question-count"]').textContent();
-    const total = parseInt(questionCount?.split('/')[1] ?? '5');
+    const match = questionCount?.match(/of\s+(\d+)/i);
+    const total = match ? parseInt(match[1]) : 5;
     for (let i = 0; i < total; i++) {
       await page.click('[data-testid="quiz-option-0"]');
       await page.click('[data-testid="next-question"]');

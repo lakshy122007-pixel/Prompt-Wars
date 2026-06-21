@@ -5,7 +5,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import {
@@ -272,6 +272,8 @@ export default function QuizPage() {
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState(false);
 
+  const [timeRemaining, setTimeRemaining] = useState(30);
+
   const startQuiz = (categoryId: QuizCategory) => {
     // Filter questions by category and optionally by difficulty
     const filtered = sampleQuestions.filter(
@@ -304,14 +306,34 @@ export default function QuizPage() {
     setAnswered(false);
   };
 
-  const handleAnswer = (idx: number) => {
+  const handleAnswer = useCallback((idx: number) => {
     if (answered) return;
     setSelected(idx);
     setAnswered(true);
-    if (idx === activeQuiz!.questions[currentQ].correctAnswer) {
+    if (activeQuiz && idx === activeQuiz.questions[currentQ].correctAnswer) {
       setScore((s) => s + 1);
     }
-  };
+  }, [answered, activeQuiz, currentQ]);
+
+  useEffect(() => {
+    if (!activeQuiz || showResult || answered) return;
+
+    const limit = activeQuiz.questions[currentQ]?.timeLimit || 30;
+    setTimeRemaining(limit);
+
+    const interval = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          handleAnswer(-1);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [activeQuiz, currentQ, answered, handleAnswer, showResult]);
 
   const nextQuestion = () => {
     if (currentQ + 1 < activeQuiz!.questions.length) {
@@ -332,7 +354,8 @@ export default function QuizPage() {
           {/* Progress */}
           <div className="mb-6">
             <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
-              <span>Question {currentQ + 1} of {activeQuiz.questions.length}</span>
+              <span data-testid="question-count">Question {currentQ + 1} of {activeQuiz.questions.length}</span>
+              <span data-testid="countdown-timer" className="font-bold text-primary">{timeRemaining}</span>
               <span>Score: {score}</span>
             </div>
             <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -345,13 +368,14 @@ export default function QuizPage() {
 
           <Card>
             <CardContent>
-              <h2 className="text-xl font-semibold mb-6">{q.question}</h2>
+              <h2 className="text-xl font-semibold mb-6" data-testid="quiz-question">{q.question}</h2>
               <div className="space-y-3">
                 {q.options.map((opt, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleAnswer(idx)}
                     disabled={answered}
+                    data-testid={`quiz-option-${idx}`}
                     className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 text-sm font-medium
                       ${!answered ? 'border-border hover:border-primary hover:bg-primary/5 cursor-pointer' : ''}
                       ${answered && idx === q.correctAnswer ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400' : ''}
@@ -368,7 +392,7 @@ export default function QuizPage() {
               </div>
 
               {answered && (
-                <div className="mt-6 p-4 rounded-xl bg-muted/50 text-sm">
+                <div className="mt-6 p-4 rounded-xl bg-muted/50 text-sm" data-testid="answer-explanation">
                   <p className="font-semibold mb-1">
                     {selected === q.correctAnswer ? '✅ Correct!' : '❌ Incorrect'}
                   </p>
@@ -378,7 +402,7 @@ export default function QuizPage() {
 
               {answered && (
                 <div className="mt-6 flex justify-end">
-                  <Button onClick={nextQuestion}>
+                  <Button onClick={nextQuestion} data-testid="next-question">
                     {currentQ + 1 < activeQuiz.questions.length ? 'Next Question' : 'View Results'}
                     <ArrowRight className="w-4 h-4" />
                   </Button>
@@ -387,12 +411,19 @@ export default function QuizPage() {
             </CardContent>
           </Card>
 
-          <div className="mt-4 text-center">
+          <div className="mt-4 flex items-center justify-between">
             <button
               onClick={() => setActiveQuiz(null)}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               ← Back to categories
+            </button>
+            <button
+              onClick={() => startQuiz(activeQuiz.category)}
+              data-testid="restart-quiz"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              ↺ Restart Quiz
             </button>
           </div>
         </div>
@@ -404,7 +435,7 @@ export default function QuizPage() {
   if (activeQuiz && showResult) {
     const pct = Math.round((score / activeQuiz.questions.length) * 100);
     return (
-      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8" data-testid="quiz-results">
         <div className="mx-auto max-w-md text-center">
           <Card>
             <CardContent className="py-12">
@@ -412,12 +443,12 @@ export default function QuizPage() {
               <h2 className="text-2xl font-bold mb-2">
                 {pct >= 70 ? 'Great Job! 🎉' : pct >= 40 ? 'Good Effort! 👍' : 'Keep Learning! 📚'}
               </h2>
-              <p className="text-4xl font-bold gradient-text mb-2">{pct}%</p>
+              <p className="text-4xl font-bold gradient-text mb-2" data-testid="quiz-score">{pct}%</p>
               <p className="text-muted-foreground mb-6">
                 {score} out of {activeQuiz.questions.length} correct
               </p>
               <div className="flex gap-3 justify-center">
-                <Button onClick={() => startQuiz(activeQuiz.category)}>Retry</Button>
+                <Button onClick={() => startQuiz(activeQuiz.category)} data-testid="restart-quiz">Retry</Button>
                 <Button variant="outline" onClick={() => setActiveQuiz(null)}>
                   All Quizzes
                 </Button>
@@ -477,19 +508,19 @@ export default function QuizPage() {
         {/* Quiz Categories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {quizCategories.map((cat) => (
-            <Card key={cat.id} hover className={`bg-gradient-to-br ${cat.color} border-0`}>
+            <Card key={cat.id} hover data-testid="quiz-category-card" className={`bg-gradient-to-br ${cat.color} border-0`}>
               <CardContent className="flex flex-col h-full">
                 <div className="w-12 h-12 rounded-xl bg-background/80 flex items-center justify-center mb-4 shadow-sm">
                   <cat.icon className={`w-6 h-6 ${cat.iconColor}`} />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{cat.title}</h3>
+                <h3 className="text-lg font-semibold mb-2" data-testid="quiz-category-title">{cat.title}</h3>
                 <p className="text-sm text-muted-foreground flex-1 mb-4">{cat.description}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     ~5 min
                   </span>
-                  <Button size="sm" onClick={() => startQuiz(cat.id)}>
+                  <Button size="sm" data-testid={`start-quiz-${cat.id}`} onClick={() => startQuiz(cat.id)}>
                     Start Quiz
                     <ArrowRight className="w-4 h-4" />
                   </Button>
