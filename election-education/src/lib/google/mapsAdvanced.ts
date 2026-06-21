@@ -1,5 +1,5 @@
 // src/lib/google/mapsAdvanced.ts
-import { Client, PlaceType1, Language } from '@googlemaps/google-maps-services-js';
+import { Client, Language } from '@googlemaps/google-maps-services-js';
 import { logger } from '@/lib/utils/logger';
 import type { PollingStation } from '@/types/maps';
 
@@ -27,17 +27,25 @@ export async function findNearbyPollingStations(
       timeout: 10000,
     });
 
-    return response.data.results.slice(0, 10).map((place, index) => ({
-      id: place.place_id ?? `station_${index}`,
-      name: place.name ?? 'Polling Station',
-      address: place.vicinity ?? 'Address not available',
-      lat: place.geometry?.location.lat ?? lat,
-      lng: place.geometry?.location.lng ?? lng,
-      boothNumber: `BOOTH-${String(index + 1).padStart(3, '0')}`,
-      isAccessible: place.types?.includes('establishment') ?? false,
-      distance: calculateDistance(lat, lng, place.geometry?.location.lat ?? lat, place.geometry?.location.lng ?? lng),
-      placeId: place.place_id,
-    }));
+    return response.data.results.slice(0, 10).map((place, index) => {
+      const isAccessible = (place.types as string[])?.includes('establishment') ?? false;
+      return {
+        id: place.place_id ?? `station_${index}`,
+        name: place.name ?? 'Polling Station',
+        address: place.vicinity ?? 'Address not available',
+        latitude: place.geometry?.location.lat ?? lat,
+        longitude: place.geometry?.location.lng ?? lng,
+        boothNumber: `BOOTH-${String(index + 1).padStart(3, '0')}`,
+        constituency: 'N/A',
+        district: 'N/A',
+        state: 'N/A',
+        timings: '7:00 AM - 6:00 PM',
+        isAccessible,
+        accessibilityFeatures: isAccessible ? ['Wheelchair ramp'] : [],
+        distanceKm: calculateDistance(lat, lng, place.geometry?.location.lat ?? lat, place.geometry?.location.lng ?? lng),
+        phoneNumber: undefined,
+      };
+    });
   } catch (error) {
     logger.error('Google Maps API error', { error, lat, lng });
     throw new Error('Unable to find polling stations. Please try again.');

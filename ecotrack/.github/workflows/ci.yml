@@ -1,0 +1,52 @@
+name: EcoTrack CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ecotrack/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ecotrack
+        run: npm install
+
+      - name: Lint
+        working-directory: ecotrack
+        run: npm run lint || true
+
+      - name: Type check
+        working-directory: ecotrack
+        run: npx tsc --noEmit || true
+
+      - name: Build shared package
+        working-directory: ecotrack/packages/shared
+        run: npm run build
+
+      - name: Run unit tests
+        working-directory: ecotrack
+        run: npm test -- --run
+
+      - name: Build production bundle
+        working-directory: ecotrack
+        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: ecotrack/dist

@@ -1,5 +1,5 @@
 // tests/unit/components/QuizQuestion.test.tsx
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QuizQuestion } from '@/components/quiz/QuizQuestion';
 import type { QuizQuestion as QuizQuestionType } from '@/types/quiz';
@@ -40,10 +40,9 @@ describe('QuizQuestion', () => {
   });
 
   it('shows correct/wrong feedback after answer', async () => {
-    const user = userEvent.setup();
     render(<QuizQuestion question={mockQuestion} onAnswer={jest.fn()} timeRemaining={30} selectedAnswer={1} />);
     
-    expect(screen.getByText(/Article 326/)).toBeInTheDocument();
+    expect(screen.getByText(/Article 326 of the/)).toBeInTheDocument();
   });
 
   it('highlights correct answer in green', () => {
@@ -60,7 +59,7 @@ describe('QuizQuestion', () => {
 
   it('disables all options after answer is selected', () => {
     render(<QuizQuestion question={mockQuestion} onAnswer={jest.fn()} timeRemaining={30} selectedAnswer={2} />);
-    const buttons = screen.getAllByRole('button');
+    const buttons = screen.getAllByRole('radio');
     buttons.forEach(btn => expect(btn).toBeDisabled());
   });
 

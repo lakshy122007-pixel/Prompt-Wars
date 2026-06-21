@@ -137,8 +137,8 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl text-center">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 rounded-full bg-saffron/10 border border-saffron/20 px-4 py-1.5 mb-8 animate-fade-in">
-            <Sparkles className="w-4 h-4 text-saffron" />
-            <span className="text-sm font-medium text-saffron-dark dark:text-saffron">
+            <Sparkles className="w-4 h-4 text-saffron-700" />
+            <span className="text-sm font-medium text-saffron-900 dark:text-saffron">
               AI-Powered Election Education
             </span>
           </div>
@@ -159,8 +159,7 @@ export default function HomePage() {
 
           {/* CTA Buttons */}
           <div
-            className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in"
-            style={{ animationDelay: '0.3s' }}
+            className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link href={ROUTES.LEARN}>
               <Button variant="primary" size="lg">
@@ -178,11 +177,10 @@ export default function HomePage() {
 
           {/* Highlights */}
           <div
-            className="mt-12 flex flex-wrap items-center justify-center gap-6 animate-fade-in"
-            style={{ animationDelay: '0.4s' }}
+            className="mt-12 flex flex-wrap items-center justify-center gap-6"
           >
             {highlights.map((h) => (
-              <div key={h.text} className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div key={h.text} className="flex items-center gap-2 text-sm text-gray-800 dark:text-gray-200">
                 <h.icon className="w-4 h-4 text-india-green" />
                 {h.text}
               </div>

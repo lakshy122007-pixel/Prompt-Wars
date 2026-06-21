@@ -2,7 +2,7 @@
 // Vertex AI with Google Search grounding for factual election data
 import { VertexAI, HarmCategory, HarmBlockThreshold } from '@google-cloud/vertexai';
 import { logger } from '@/lib/utils/logger';
-import type { ChatMessage } from '@/types/api';
+import type { ChatMessage } from '@/types';
 
 const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT_ID!;
 const LOCATION = 'asia-south1';
@@ -39,7 +39,8 @@ export async function generateGroundedResponse(
       temperature: 0.3,
       topP: 0.8,
     },
-    tools: [{ googleSearchRetrieval: { dynamicRetrievalConfig: { mode: 'MODE_DYNAMIC', dynamicThreshold: 0.7 } } }],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    tools: [{ googleSearchRetrieval: { dynamicRetrievalConfig: { mode: 'MODE_DYNAMIC' as any, dynamicThreshold: 0.7 } } }],
   });
 
   const chat = model.startChat({

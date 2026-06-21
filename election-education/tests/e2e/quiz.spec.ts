@@ -8,7 +8,7 @@ test.describe('Quiz Flow', () => {
 
   test('shows quiz categories on landing', async ({ page }) => {
     await expect(page.locator('[data-testid="quiz-category-card"]').first()).toBeVisible();
-    await expect(page.getByText('Voter Eligibility')).toBeVisible();
+    await expect(page.locator('[data-testid="quiz-category-title"]').filter({ hasText: 'Voter Eligibility' })).toBeVisible();
   });
 
   test('completes a full quiz flow', async ({ page }) => {

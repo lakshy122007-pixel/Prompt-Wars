@@ -3,7 +3,8 @@
  * @description CSRF token generation and validation for state-changing requests.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 const CSRF_HEADER = 'x-csrf-token';
 const CSRF_COOKIE = '__csrf';

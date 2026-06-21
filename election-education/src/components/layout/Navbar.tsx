@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/stores/authStore';
 import { signInWithGoogle, signInAsGuest, signOut } from '@/lib/firebase/auth';
 import { NAV_ITEMS, ROUTES } from '@/lib/constants/routes';
+import { LanguageSelector } from '@/components/translate/LanguageSelector';
 import {
   LayoutDashboard,
   BookOpen,
@@ -49,6 +50,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ darkMode, toggleDarkMode }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authMenuOpen, setAuthMenuOpen] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState('en');
   const pathname = usePathname();
   const { user, isAuthenticated } = useAuthStore();
 
@@ -137,6 +139,12 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, toggleDarkMode }) => {
 
           {/* Right side controls */}
           <div className="flex items-center gap-2">
+            {/* Language Selector */}
+            <LanguageSelector
+              currentLanguage={currentLanguage}
+              onLanguageChange={setCurrentLanguage}
+            />
+
             {/* Dark mode toggle */}
             <Button
               variant="ghost"
@@ -156,6 +164,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, toggleDarkMode }) => {
                   aria-label="User menu"
                 >
                   {user?.photoURL ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={user.photoURL}
                       alt={user.displayName || 'User avatar'}
@@ -168,7 +177,7 @@ export const Navbar: React.FC<NavbarProps> = ({ darkMode, toggleDarkMode }) => {
                   )}
                 </button>
               ) : (
-                <Button variant="primary" size="sm" onClick={handleSignIn}>
+                <Button variant="primary" size="sm" onClick={handleSignIn} aria-label="Sign in with Google">
                   <LogIn className="w-4 h-4" />
                   <span className="hidden sm:inline">Sign In</span>
                 </Button>

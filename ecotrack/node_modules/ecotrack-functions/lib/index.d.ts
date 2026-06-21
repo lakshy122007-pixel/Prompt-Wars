@@ -1,0 +1,9 @@
+export { createAccount } from './auth/createAccount.js';
+export { logActivity } from './activities/logActivity.js';
+export { aggregateDailyTotals } from './aggregation/aggregateDailyTotals.js';
+export { aggregateWeeklyMonthly } from './aggregation/aggregateWeeklyMonthly.js';
+export { createGoal } from './goals/createGoal.js';
+export { updateCommunityOptIn } from './community/updateCommunityOptIn.js';
+export { exportUserData } from './export/exportUserData.js';
+export { deleteUserAccount } from './account/deleteUserAccount.js';
+export { sendWeeklyDigest } from './email/sendWeeklyDigest.js';

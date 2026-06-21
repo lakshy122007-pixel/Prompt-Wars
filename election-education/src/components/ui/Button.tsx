@@ -18,10 +18,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]';
 
     const variants: Record<string, string> = {
-      primary: 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md',
+      primary: 'bg-navy text-white hover:bg-navy-dark shadow-sm hover:shadow-md dark:bg-saffron dark:text-navy dark:hover:bg-saffron-dark',
       secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-sm hover:shadow-md',
       accent: 'bg-accent text-accent-foreground hover:bg-accent/90 shadow-sm hover:shadow-md',
-      outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground',
+      outline: 'border-2 border-navy text-navy hover:bg-navy hover:text-white dark:border-saffron dark:text-saffron dark:hover:bg-saffron dark:hover:text-navy',
       ghost: 'text-foreground hover:bg-muted',
       destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
     };

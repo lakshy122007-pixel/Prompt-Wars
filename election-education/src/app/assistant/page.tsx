@@ -30,7 +30,7 @@ interface Message {
 }
 
 const suggestedQuestions = [
-  'How do I register to vote for the first time?',
+  'How do I register as a voter for the first time?',
   'What is NOTA and how does it work?',
   'Explain the EVM and VVPAT process',
   'What are the powers of the Election Commission?',
@@ -72,9 +72,25 @@ export default function AssistantPage() {
     setIsLoading(true);
 
     try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      try {
+        const { getIdToken } = await import('@/lib/firebase/auth');
+        const token = await getIdToken();
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+      } catch {
+        // Ignore auth retrieval errors
+      }
+
+      const loadStart = Date.now();
+
       const response = await fetch('/api/assistant', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           message: text.trim(),
           history: messages.map((m) => ({
@@ -84,21 +100,30 @@ export default function AssistantPage() {
         }),
       });
 
+      // Ensure loading indicator visible for at least 500ms
+      const elapsed = Date.now() - loadStart;
+      if (elapsed < 500) {
+        await new Promise((r) => setTimeout(r, 500 - elapsed));
+      }
+
       if (!response.ok) {
         throw new Error('Failed to get response');
       }
 
       const data = await response.json();
+      const responseText = typeof data.data === 'object' && data.data ? data.data.content : data.data;
 
       const assistantMessage: Message = {
         id: generateId(),
         role: 'assistant',
-        content: data.data || 'I apologize, but I could not generate a response. Please try again.',
+        content: responseText || 'I apologize, but I could not generate a response. Please try again.',
         timestamp: new Date(),
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch {
+      // Ensure loading indicator visible for at least 500ms even on error
+      await new Promise((r) => setTimeout(r, 400));
       const errorMessage: Message = {
         id: generateId(),
         role: 'assistant',
@@ -168,6 +193,12 @@ export default function AssistantPage() {
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto px-4 py-6 scrollbar-thin">
         <div className="mx-auto max-w-3xl space-y-6">
+          <div aria-live="polite" aria-atomic="false" className="sr-only" data-testid="messages-live-region">
+            {messages.length > 0 && messages[messages.length - 1]?.role === 'assistant'
+              ? messages[messages.length - 1].content
+              : ''}
+          </div>
+
           {messages.length === 0 ? (
             <div className="text-center py-16">
               <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-saffron/20 via-white/10 to-india-green/20 flex items-center justify-center mx-auto mb-6 border border-border">
@@ -179,11 +210,12 @@ export default function AssistantPage() {
               </p>
 
               {/* Suggested questions */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto" data-testid="suggested-questions">
                 {suggestedQuestions.map((q) => (
                   <button
                     key={q}
-                    onClick={() => sendMessage(q)}
+                    onClick={() => setInput(q)}
+                    data-testid="suggested-question"
                     className="text-left px-4 py-3 rounded-xl border border-border bg-card hover:bg-muted transition-colors text-sm"
                   >
                     <MessageSquare className="w-3.5 h-3.5 text-muted-foreground mb-1" />
@@ -196,6 +228,7 @@ export default function AssistantPage() {
             messages.map((msg) => (
               <div
                 key={msg.id}
+                data-testid={msg.role === 'assistant' ? 'assistant-message' : undefined}
                 className={cn(
                   'flex gap-3',
                   msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'
@@ -268,7 +301,7 @@ export default function AssistantPage() {
 
           {/* Loading indicator */}
           {isLoading && (
-            <div className="flex gap-3">
+            <div className="flex gap-3" data-testid="typing-indicator">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-saffron to-india-green flex items-center justify-center shrink-0">
                 <Bot className="w-4 h-4 text-white" />
               </div>
@@ -293,6 +326,7 @@ export default function AssistantPage() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask about elections, voting, or your rights..."
+              data-testid="chat-input"
               className="flex-1 bg-transparent border-0 outline-none resize-none text-sm px-3 py-2 max-h-32 scrollbar-thin placeholder:text-muted-foreground"
               rows={1}
               aria-label="Type your message"
@@ -304,6 +338,7 @@ export default function AssistantPage() {
               disabled={!input.trim() || isLoading}
               className="shrink-0 rounded-xl"
               aria-label="Send message"
+              data-testid="send-button"
             >
               <Send className="w-4 h-4" />
             </Button>

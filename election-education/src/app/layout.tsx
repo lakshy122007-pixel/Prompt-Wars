@@ -12,7 +12,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { onAuthChange } from '@/lib/firebase/auth';
 import { getUserProfile } from '@/lib/firebase/firestore';
 import { STORAGE_KEYS } from '@/lib/constants/app';
-import { logger } from '@/lib/utils/logger';
 import { useAuthStore } from '@/stores/authStore';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -140,11 +139,11 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className="min-h-screen flex flex-col">
-        <a href="#main-content" className="skip-to-content">
+        <a href="#main-content" className="skip-to-content" data-testid="skip-to-content" tabIndex={0}>
           Skip to content
         </a>
         <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-        <main id="main-content" className="flex-1">
+        <main id="main-content" className="flex-1" tabIndex={-1}>
           {children}
         </main>
         <Footer />

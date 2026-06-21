@@ -90,7 +90,7 @@ export const Footer: React.FC = () => {
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  National Voters' Service ↗
+                  National Voters&apos; Service ↗
                 </a>
               </li>
             </ul>

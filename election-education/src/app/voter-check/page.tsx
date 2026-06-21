@@ -200,13 +200,14 @@ export default function VoterCheckPage() {
 
                 {/* Has Voter ID */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <div id="voter-id-label" className="block text-sm font-medium mb-2">
                     Do you have a Voter ID (EPIC)?
-                  </label>
-                  <div className="flex gap-4">
+                  </div>
+                  <div role="radiogroup" aria-labelledby="voter-id-label" className="flex gap-4">
                     {['yes', 'no'].map((opt) => (
                       <label
                         key={opt}
+                        htmlFor={`voter-id-${opt}`}
                         className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 cursor-pointer transition-all text-sm font-medium ${
                           formData.hasVoterId === opt
                             ? 'border-primary bg-primary/5'
@@ -214,6 +215,7 @@ export default function VoterCheckPage() {
                         }`}
                       >
                         <input
+                          id={`voter-id-${opt}`}
                           type="radio"
                           name="hasVoterId"
                           value={opt}

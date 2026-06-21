@@ -4,7 +4,7 @@
  * Falls back to in-memory store if Redis is unavailable.
  */
 
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 /** Rate limit configuration */
 interface RateLimitConfig {

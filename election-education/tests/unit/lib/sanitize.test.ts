@@ -24,8 +24,8 @@ describe('sanitizeInput', () => {
   });
 
   it('handles null and undefined gracefully', () => {
-    expect(() => sanitizeInput(null as unknown as object)).not.toThrow();
-    expect(() => sanitizeInput(undefined as unknown as object)).not.toThrow();
+    expect(() => sanitizeInput(null as unknown as Record<string, unknown>)).not.toThrow();
+    expect(() => sanitizeInput(undefined as unknown as Record<string, unknown>)).not.toThrow();
   });
 
   it('strips nested script injection attempts', () => {

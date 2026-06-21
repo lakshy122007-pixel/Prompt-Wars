@@ -1,7 +1,6 @@
 /**
  * @module Input Sanitization
  * @description Sanitizes user input to prevent XSS and injection attacks.
- * Uses DOMPurify on server side via jsdom.
  */
 
 /**
@@ -62,18 +61,31 @@ export const sanitizeHtml = (html: string): string => {
     'ul', 'ol', 'li',
     'a', 'blockquote', 'code', 'pre',
     'table', 'thead', 'tbody', 'tr', 'th', 'td',
-    'span', 'div',
+    'span', 'div'
   ];
 
-  const tagPattern = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
+  let clean = html;
+  
+  // 1. Remove script tags and their contents recursively
+  let prev;
+  do {
+    prev = clean;
+    clean = clean.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gi, '');
+  } while (clean !== prev);
 
-  return html.replace(tagPattern, (match, tagName: string) => {
-    if (allowedTags.includes(tagName.toLowerCase())) {
-      // Remove event handlers from allowed tags
-      return match.replace(/\s+on\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '');
-    }
-    return '';
-  });
+  // 2. Remove other disallowed tags recursively
+  do {
+    prev = clean;
+    clean = clean.replace(/<\/?([a-z][a-z0-9]*)\b[^>]*>/gi, (match, tagName) => {
+      if (allowedTags.includes(tagName.toLowerCase())) {
+        // Remove event handlers like onclick, onload, etc.
+        return match.replace(/\s+on\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+      }
+      return '';
+    });
+  } while (clean !== prev);
+
+  return clean;
 };
 
 /**

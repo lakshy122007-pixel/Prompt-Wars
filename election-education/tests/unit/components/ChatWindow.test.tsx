@@ -1,11 +1,8 @@
 // tests/unit/components/ChatWindow.test.tsx
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ChatWindow } from '@/components/assistant/ChatWindow';
-import { generateChatResponse } from '@/lib/google/gemini';
 
-jest.mock('@/lib/google/gemini');
-const mockGenerateChatResponse = generateChatResponse as jest.MockedFunction<typeof generateChatResponse>;
 
 const mockMessages = [
   { id: '1', role: 'user' as const, content: 'How do I register to vote?', timestamp: new Date() },
@@ -96,6 +93,7 @@ describe('ChatWindow', () => {
     render(<ChatWindow messages={[]} onSendMessage={onSendMessage} isLoading={false} />);
     
     const input = screen.getByRole('textbox', { name: /message/i });
+    input.focus();
     await user.keyboard('{Enter}');
     
     expect(onSendMessage).not.toHaveBeenCalled();

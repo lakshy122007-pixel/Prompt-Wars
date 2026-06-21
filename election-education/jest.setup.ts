@@ -1,11 +1,6 @@
-// jest.setup.ts
+import React from 'react';
 import '@testing-library/jest-dom';
-import { TextEncoder, TextDecoder } from 'util';
 import { server } from './tests/__mocks__/server';
-
-// Polyfills
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
@@ -24,7 +19,7 @@ jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, ...props }: { src: string; alt: string }) => {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={alt} {...props} />;
+    return React.createElement('img', { src, alt, ...props });
   },
 }));
 

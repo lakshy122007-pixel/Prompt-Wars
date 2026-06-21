@@ -3,6 +3,10 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 test.describe('Accessibility — WCAG 2.2 AA', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+  });
+
   test('home page has no critical accessibility violations', async ({ page }) => {
     await page.goto('/');
     const results = await new AxeBuilder({ page })

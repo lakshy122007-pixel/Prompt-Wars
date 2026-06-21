@@ -1,0 +1,202 @@
+<testsuites id="" name="" tests="85" failures="0" skipped="0" errors="0" time="65.303749">
+<testsuite name="accessibility.spec.ts" timestamp="2026-06-21T15:40:52.813Z" hostname="chromium" tests="8" failures="0" skipped="0" time="10.985" errors="0">
+<testcase name="Accessibility — WCAG 2.2 AA › home page has no critical accessibility violations" classname="accessibility.spec.ts" time="2.308">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › full keyboard navigation on home page" classname="accessibility.spec.ts" time="0.947">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › quiz page accessible with keyboard" classname="accessibility.spec.ts" time="2.064">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › chat page has aria-live region for new messages" classname="accessibility.spec.ts" time="0.862">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › all images have alt text" classname="accessibility.spec.ts" time="0.614">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › all form inputs have labels" classname="accessibility.spec.ts" time="1.328">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › color contrast meets WCAG AA" classname="accessibility.spec.ts" time="1.86">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › language selector is keyboard operable" classname="accessibility.spec.ts" time="1.002">
+</testcase>
+</testsuite>
+<testsuite name="assistant.spec.ts" timestamp="2026-06-21T15:40:52.813Z" hostname="chromium" tests="5" failures="0" skipped="0" time="6.607" errors="0">
+<testcase name="AI Assistant › shows suggested questions on empty chat" classname="assistant.spec.ts" time="0.81">
+</testcase>
+<testcase name="AI Assistant › sends message and receives response" classname="assistant.spec.ts" time="2.873">
+</testcase>
+<testcase name="AI Assistant › typing indicator appears while loading" classname="assistant.spec.ts" time="1.095">
+</testcase>
+<testcase name="AI Assistant › chat input clears after sending" classname="assistant.spec.ts" time="1.047">
+</testcase>
+<testcase name="AI Assistant › suggested question auto-fills input on click" classname="assistant.spec.ts" time="0.782">
+</testcase>
+</testsuite>
+<testsuite name="quiz.spec.ts" timestamp="2026-06-21T15:40:52.813Z" hostname="chromium" tests="4" failures="0" skipped="0" time="3.527" errors="0">
+<testcase name="Quiz Flow › shows quiz categories on landing" classname="quiz.spec.ts" time="0.761">
+</testcase>
+<testcase name="Quiz Flow › completes a full quiz flow" classname="quiz.spec.ts" time="0.78">
+</testcase>
+<testcase name="Quiz Flow › shows results with score at the end" classname="quiz.spec.ts" time="1.118">
+</testcase>
+<testcase name="Quiz Flow › allows quiz restart" classname="quiz.spec.ts" time="0.868">
+</testcase>
+</testsuite>
+<testsuite name="accessibility.spec.ts" timestamp="2026-06-21T15:40:52.813Z" hostname="firefox" tests="8" failures="0" skipped="0" time="32.264" errors="0">
+<testcase name="Accessibility — WCAG 2.2 AA › home page has no critical accessibility violations" classname="accessibility.spec.ts" time="5.615">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › full keyboard navigation on home page" classname="accessibility.spec.ts" time="3.424">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › quiz page accessible with keyboard" classname="accessibility.spec.ts" time="7.355">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › chat page has aria-live region for new messages" classname="accessibility.spec.ts" time="3.284">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › all images have alt text" classname="accessibility.spec.ts" time="2.017">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › all form inputs have labels" classname="accessibility.spec.ts" time="3.69">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › color contrast meets WCAG AA" classname="accessibility.spec.ts" time="4.085">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › language selector is keyboard operable" classname="accessibility.spec.ts" time="2.794">
+</testcase>
+</testsuite>
+<testsuite name="assistant.spec.ts" timestamp="2026-06-21T15:40:52.813Z" hostname="firefox" tests="5" failures="0" skipped="0" time="12.982" errors="0">
+<testcase name="AI Assistant › shows suggested questions on empty chat" classname="assistant.spec.ts" time="1.599">
+</testcase>
+<testcase name="AI Assistant › sends message and receives response" classname="assistant.spec.ts" time="4.577">
+</testcase>
+<testcase name="AI Assistant › typing indicator appears while loading" classname="assistant.spec.ts" time="2.347">
+</testcase>
+<testcase name="AI Assistant › chat input clears after sending" classname="assistant.spec.ts" time="2.545">
+</testcase>
+<testcase name="AI Assistant › suggested question auto-fills input on click" classname="assistant.spec.ts" time="1.914">
+</testcase>
+</testsuite>
+<testsuite name="quiz.spec.ts" timestamp="2026-06-21T15:40:52.813Z" hostname="firefox" tests="4" failures="0" skipped="0" time="7.611" errors="0">
+<testcase name="Quiz Flow › shows quiz categories on landing" classname="quiz.spec.ts" time="1.481">
+</testcase>
+<testcase name="Quiz Flow › completes a full quiz flow" classname="quiz.spec.ts" time="1.557">
+</testcase>
+<testcase name="Quiz Flow › shows results with score at the end" classname="quiz.spec.ts" time="2.518">
+</testcase>
+<testcase name="Quiz Flow › allows quiz restart" classname="quiz.spec.ts" time="2.055">
+</testcase>
+</testsuite>
+<testsuite name="accessibility.spec.ts" timestamp="2026-06-21T15:40:52.813Z" hostname="webkit" tests="8" failures="0" skipped="0" time="24.175" errors="0">
+<testcase name="Accessibility — WCAG 2.2 AA › home page has no critical accessibility violations" classname="accessibility.spec.ts" time="4.838">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › full keyboard navigation on home page" classname="accessibility.spec.ts" time="2.201">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › quiz page accessible with keyboard" classname="accessibility.spec.ts" time="4.174">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › chat page has aria-live region for new messages" classname="accessibility.spec.ts" time="1.566">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › all images have alt text" classname="accessibility.spec.ts" time="1.759">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › all form inputs have labels" classname="accessibility.spec.ts" time="3.197">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › color contrast meets WCAG AA" classname="accessibility.spec.ts" time="4.281">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › language selector is keyboard operable" classname="accessibility.spec.ts" time="2.159">
+</testcase>
+</testsuite>
+<testsuite name="assistant.spec.ts" timestamp="2026-06-21T15:40:52.813Z" hostname="webkit" tests="5" failures="0" skipped="0" time="15.972" errors="0">
+<testcase name="AI Assistant › shows suggested questions on empty chat" classname="assistant.spec.ts" time="1.627">
+</testcase>
+<testcase name="AI Assistant › sends message and receives response" classname="assistant.spec.ts" time="5.099">
+</testcase>
+<testcase name="AI Assistant › typing indicator appears while loading" classname="assistant.spec.ts" time="3.643">
+</testcase>
+<testcase name="AI Assistant › chat input clears after sending" classname="assistant.spec.ts" time="3.504">
+</testcase>
+<testcase name="AI Assistant › suggested question auto-fills input on click" classname="assistant.spec.ts" time="2.099">
+</testcase>
+</testsuite>
+<testsuite name="quiz.spec.ts" timestamp="2026-06-21T15:40:52.813Z" hostname="webkit" tests="4" failures="0" skipped="0" time="13.714" errors="0">
+<testcase name="Quiz Flow › shows quiz categories on landing" classname="quiz.spec.ts" time="1.713">
+</testcase>
+<testcase name="Quiz Flow › completes a full quiz flow" classname="quiz.spec.ts" time="2.648">
+</testcase>
+<testcase name="Quiz Flow › shows results with score at the end" classname="quiz.spec.ts" time="5.707">
+</testcase>
+<testcase name="Quiz Flow › allows quiz restart" classname="quiz.spec.ts" time="3.646">
+</testcase>
+</testsuite>
+<testsuite name="accessibility.spec.ts" timestamp="2026-06-21T15:40:52.813Z" hostname="mobile-chrome" tests="8" failures="0" skipped="0" time="10.794" errors="0">
+<testcase name="Accessibility — WCAG 2.2 AA › home page has no critical accessibility violations" classname="accessibility.spec.ts" time="1.904">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › full keyboard navigation on home page" classname="accessibility.spec.ts" time="1.038">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › quiz page accessible with keyboard" classname="accessibility.spec.ts" time="2.029">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › chat page has aria-live region for new messages" classname="accessibility.spec.ts" time="0.594">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › all images have alt text" classname="accessibility.spec.ts" time="0.783">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › all form inputs have labels" classname="accessibility.spec.ts" time="1.562">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › color contrast meets WCAG AA" classname="accessibility.spec.ts" time="1.834">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › language selector is keyboard operable" classname="accessibility.spec.ts" time="1.05">
+</testcase>
+</testsuite>
+<testsuite name="assistant.spec.ts" timestamp="2026-06-21T15:40:52.813Z" hostname="mobile-chrome" tests="5" failures="0" skipped="0" time="6.237" errors="0">
+<testcase name="AI Assistant › shows suggested questions on empty chat" classname="assistant.spec.ts" time="0.69">
+</testcase>
+<testcase name="AI Assistant › sends message and receives response" classname="assistant.spec.ts" time="2.951">
+</testcase>
+<testcase name="AI Assistant › typing indicator appears while loading" classname="assistant.spec.ts" time="0.977">
+</testcase>
+<testcase name="AI Assistant › chat input clears after sending" classname="assistant.spec.ts" time="0.89">
+</testcase>
+<testcase name="AI Assistant › suggested question auto-fills input on click" classname="assistant.spec.ts" time="0.729">
+</testcase>
+</testsuite>
+<testsuite name="quiz.spec.ts" timestamp="2026-06-21T15:40:52.813Z" hostname="mobile-chrome" tests="4" failures="0" skipped="0" time="3.886" errors="0">
+<testcase name="Quiz Flow › shows quiz categories on landing" classname="quiz.spec.ts" time="0.876">
+</testcase>
+<testcase name="Quiz Flow › completes a full quiz flow" classname="quiz.spec.ts" time="0.967">
+</testcase>
+<testcase name="Quiz Flow › shows results with score at the end" classname="quiz.spec.ts" time="1.139">
+</testcase>
+<testcase name="Quiz Flow › allows quiz restart" classname="quiz.spec.ts" time="0.904">
+</testcase>
+</testsuite>
+<testsuite name="accessibility.spec.ts" timestamp="2026-06-21T15:40:52.813Z" hostname="mobile-safari" tests="8" failures="0" skipped="0" time="19.587" errors="0">
+<testcase name="Accessibility — WCAG 2.2 AA › home page has no critical accessibility violations" classname="accessibility.spec.ts" time="3.843">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › full keyboard navigation on home page" classname="accessibility.spec.ts" time="1.932">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › quiz page accessible with keyboard" classname="accessibility.spec.ts" time="2.92">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › chat page has aria-live region for new messages" classname="accessibility.spec.ts" time="1.234">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › all images have alt text" classname="accessibility.spec.ts" time="1.546">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › all form inputs have labels" classname="accessibility.spec.ts" time="2.63">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › color contrast meets WCAG AA" classname="accessibility.spec.ts" time="3.553">
+</testcase>
+<testcase name="Accessibility — WCAG 2.2 AA › language selector is keyboard operable" classname="accessibility.spec.ts" time="1.929">
+</testcase>
+</testsuite>
+<testsuite name="assistant.spec.ts" timestamp="2026-06-21T15:40:52.813Z" hostname="mobile-safari" tests="5" failures="0" skipped="0" time="12.059" errors="0">
+<testcase name="AI Assistant › shows suggested questions on empty chat" classname="assistant.spec.ts" time="1.211">
+</testcase>
+<testcase name="AI Assistant › sends message and receives response" classname="assistant.spec.ts" time="3.735">
+</testcase>
+<testcase name="AI Assistant › typing indicator appears while loading" classname="assistant.spec.ts" time="2.783">
+</testcase>
+<testcase name="AI Assistant › chat input clears after sending" classname="assistant.spec.ts" time="2.585">
+</testcase>
+<testcase name="AI Assistant › suggested question auto-fills input on click" classname="assistant.spec.ts" time="1.745">
+</testcase>
+</testsuite>
+<testsuite name="quiz.spec.ts" timestamp="2026-06-21T15:40:52.813Z" hostname="mobile-safari" tests="4" failures="0" skipped="0" time="11.044" errors="0">
+<testcase name="Quiz Flow › shows quiz categories on landing" classname="quiz.spec.ts" time="1.501">
+</testcase>
+<testcase name="Quiz Flow › completes a full quiz flow" classname="quiz.spec.ts" time="2.02">
+</testcase>
+<testcase name="Quiz Flow › shows results with score at the end" classname="quiz.spec.ts" time="4.686">
+</testcase>
+<testcase name="Quiz Flow › allows quiz restart" classname="quiz.spec.ts" time="2.837">
+</testcase>
+</testsuite>
+</testsuites>

@@ -1,5 +1,4 @@
 // tests/integration/api/assistant.test.ts
-import { createMocks } from 'node-mocks-http';
 import { POST } from '@/app/api/assistant/route';
 import { verifyAuthToken } from '@/lib/firebase/auth';
 import { rateLimit } from '@/lib/security/rateLimit';

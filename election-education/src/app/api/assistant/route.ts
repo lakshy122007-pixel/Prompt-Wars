@@ -10,11 +10,15 @@
  * @returns 500 — Internal server error from Gemini API
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 import { HTTP_STATUS } from '@/lib/constants/app';
 import { logger } from '@/lib/utils/logger';
 import { getErrorMessage } from '@/lib/utils/errors';
+import { verifyAuthToken } from '@/lib/firebase/auth';
+import { rateLimit } from '@/lib/security/rateLimit';
+import { sanitizeString } from '@/lib/security/sanitize';
 
 /**
  * Validates the request body for required fields
@@ -23,7 +27,7 @@ import { getErrorMessage } from '@/lib/utils/errors';
  */
 function isValidRequestBody(
   body: unknown,
-): body is { message: string; history?: Array<{ role: string; parts: Array<{ text: string }> }> } {
+): body is { message: string; history?: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> } {
   return (
     typeof body === 'object' &&
     body !== null &&
@@ -42,32 +46,72 @@ function isValidRequestBody(
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    const body: unknown = await request.json();
+    // 1. Verify Authentication
+    const authHeader = request.headers.get('Authorization');
+    const user = await verifyAuthToken(authHeader);
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: HTTP_STATUS.UNAUTHORIZED }
+      );
+    }
+
+    // 2. Rate Limiting
+    const rateLimitResult = await rateLimit(request, { limit: 100, window: '1h' });
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { success: false, error: 'Too many requests' },
+        {
+          status: HTTP_STATUS.TOO_MANY_REQUESTS,
+          headers: {
+            'Retry-After': String(rateLimitResult.retryAfter ?? 3600),
+          },
+        }
+      );
+    }
+
+    // 3. Parse and Validate Request Body
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { success: false, error: 'Invalid JSON body' },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
 
     if (!isValidRequestBody(body)) {
       return NextResponse.json(
         { success: false, error: 'Message is required' },
-        { status: HTTP_STATUS.BAD_REQUEST },
+        { status: HTTP_STATUS.BAD_REQUEST }
       );
     }
 
+    // 4. Sanitize Input Message
+    const sanitizedMessage = sanitizeString(body.message);
+
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({
-        success: true,
-        data: getDemoResponse(body.message),
-      });
+    let responseText: string;
+
+    if (!apiKey && process.env.NODE_ENV !== 'test') {
+      responseText = getDemoResponse(sanitizedMessage);
+    } else {
+      const { generateChatResponse } = await import('@/lib/google/gemini');
+      responseText = await generateChatResponse(sanitizedMessage, body.history ?? []);
     }
 
-    const { generateChatResponse } = await import('@/lib/google/gemini');
-    const response = await generateChatResponse(body.message, body.history ?? []);
-
-    return NextResponse.json({ success: true, data: response });
+    return NextResponse.json({
+      success: true,
+      data: {
+        content: responseText
+      }
+    });
   } catch (error: unknown) {
     logger.error('Assistant API error', { error: getErrorMessage(error) });
     return NextResponse.json(
-      { success: false, error: 'Failed to generate response' },
-      { status: HTTP_STATUS.INTERNAL_SERVER_ERROR },
+      { success: false, error: 'Internal server error' },
+      { status: HTTP_STATUS.INTERNAL_SERVER_ERROR }
     );
   }
 }
